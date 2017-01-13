@@ -20,6 +20,18 @@ Schema.prototype.extend = function(obj, options) {
     k[1] = args;
   });
 
+  // Fix validators RegExps
+  Object.keys(this.paths).forEach(function(k) {
+    this.paths[k].validators.forEach(function (validator, index) {
+        if (validator.validator instanceof RegExp) {
+          newSchema.paths[k].validators[index].validator = validator.validator;
+        }
+        if (validator.regexp instanceof RegExp) {
+          newSchema.paths[k].validators[index].regexp = validator.regexp;
+        }
+    });
+  }, this);
+
   // Override the existing options with any newly supplied ones
   for(var k in options) {
     newSchema.options[k] = options[k];
